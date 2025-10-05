@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/PD.css">
+  <script src="js/index.js"></script>
+  <title>เข้าสู่ระบบ</title>
+</head>
+<body>
+ <div class="login-container">
+        <h2>เข้าสู่ระบบ</h2>
+        <div id="error-message" class="error-text"></div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">ชื่อผู้ใช้ (Username):</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">รหัสผ่าน (Password):</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">เข้าสู่ระบบ</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // ป้องกันการส่งฟอร์มแบบดั้งเดิม
+
+            const validUsers = ["Phaidei", "Mydei", "Phainon"];
+            const validPassword = "1234";
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorMessage = document.getElementById('error-message');
+
+            if (!validUsers.includes(username)) {
+                errorMessage.textContent = 'ชื่อผู้ใช้ไม่ถูกต้อง! กรุณาใช้ Phaidei, Mydei, หรือ Phainon เท่านั้น';
+                return;
+            }
+
+            if (password !== validPassword) {
+                errorMessage.textContent = 'รหัสผ่านไม่ถูกต้อง! กรุณาตรวจสอบรหัสผ่านอีกครั้ง';
+                return;
+            }
+
+            // ถ้าถูกต้อง: บันทึกชื่อผู้ใช้และเปลี่ยนหน้า
+            localStorage.setItem('currentUser', username);
+            window.location.href = 'gallery.html'; 
+        });
+    </script>
+</body>
+</html>

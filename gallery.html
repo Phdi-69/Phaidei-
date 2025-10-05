@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แกลเลอรีรูปภาพ</title>
+    <link rel="stylesheet" href="css/PD.css"> 
+</head>
+<body id="gallery-body">
+
+    <div class="header">
+        <h1>แกลเลอรีของ <span id="welcome-user"></span></h1>
+        <button onclick="logout()">ออกจากระบบ</button>
+    </div>
+
+    <div class="gallery-container">
+        <h2>อัปโหลดรูปภาพของคุณ (สูงสุด 3 ภาพ)</h2> 
+        <input type="file" id="imageUpload" accept="image/*" multiple>
+        <div id="image-preview" class="image-preview-grid">
+            </div>
+    </div>
+
+    <script>
+        // โค้ด JavaScript สำหรับหน้าแกลเลอรี
+
+        const currentUser = localStorage.getItem('currentUser');
+        const body = document.getElementById('gallery-body');
+        const welcomeUser = document.getElementById('welcome-user');
+
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // 1. กำหนดสีพื้นหลังตามผู้ใช้
+        welcomeUser.textContent = currentUser;
+        if (currentUser === 'Phaidei') {
+            body.classList.add('bg-pink');
+        } else if (currentUser === 'Mydei') {
+            body.classList.add('bg-red');
+        } else if (currentUser === 'Phainon') {
+            body.classList.add('bg-blue');
+        }
+
+        // 2. ฟังก์ชันจัดการการอัปโหลดรูปภาพ
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const previewGrid = document.getElementById('image-preview');
+            const files = event.target.files;
+
+            // ล้างรูปภาพตัวอย่างเดิมออก
+            previewGrid.innerHTML = ''; 
+            
+            const maxFiles = 3;
+            // จำกัดจำนวนไฟล์ที่นำมาประมวลผลให้เหลือสูงสุด 3 ไฟล์
+            const filesToProcess = Array.from(files).slice(0, maxFiles);
+
+            if (files.length > maxFiles) {
+                alert(`อัปโหลดได้สูงสุดเพียง ${maxFiles} ภาพเท่านั้น`);
+            }
+
+            filesToProcess.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        // สร้างกล่องหลักสำหรับรูปภาพและปุ่ม
+                        const previewBox = document.createElement('div');
+                        previewBox.classList.add('image-item');
+                        
+                        // 1. สร้างแท็กรูปภาพ
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.classList.add('uploaded-image');
+                        img.alt = file.name;
+
+                        // 2. สร้างปุ่มบันทึกรูป
+                        const saveButton = document.createElement('button');
+                        saveButton.textContent = 'บันทึกรูป';
+                        saveButton.classList.add('save-button');
+                        // เมื่อคลิกปุ่ม จะเรียกฟังก์ชันดาวน์โหลด
+                        saveButton.onclick = () => {
+                            downloadImage(e.target.result, file.name);
+                        };
+
+                        // ใส่รูปภาพและปุ่มลงในกล่อง
+                        previewBox.appendChild(img);
+                        previewBox.appendChild(saveButton);
+                        previewGrid.appendChild(previewBox);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // 3. ฟังก์ชันสำหรับดาวน์โหลดรูปภาพ (ใช้ Data URL)
+        function downloadImage(dataUrl, filename) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            // กำหนดชื่อไฟล์สำหรับดาวน์โหลด
+            a.download = filename.replace(/\s+/g, '_'); 
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // 4. ฟังก์ชันออกจากระบบ
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+    </script>
+    
+</body>
+</html>
